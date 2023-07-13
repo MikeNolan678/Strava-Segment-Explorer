@@ -1,0 +1,46 @@
+﻿@page
+@using StravaSegmentExplorerDataAccess.Models;
+@using StravaSegmentExplorerDataAccess.SQLServer;
+@using System.Security.Claims;
+@using Microsoft.Extensions.Configuration;
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Username" class="form-control" disabled />
+                <label asp-for="Username" class="form-label"></label>
+            </div>
+        </form>
+        <hr />
+            <a class="btn btn-primary" role="button" asp-area="" asp-controller="ConnectToStrava" asp-action="Authorize">Connect To Strava</a>
+
+    </div>
+</div>
+@*
+    <hr />
+    <div class="row">
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h6>First Name</h6>@Model.UserInfo.FirstName</li>
+                <li class="list-group-item"><h6>Last Name</h6>@Model.UserInfo.LastName</li>
+                <li class="list-group-item"><h6>City</h6>@Model.UserInfo.City</li>
+            </ul>
+        </div>
+    </div>*@
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
