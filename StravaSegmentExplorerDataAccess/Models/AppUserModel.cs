@@ -18,6 +18,7 @@ namespace StravaSegmentExplorerDataAccess.Models
         public string Country { get; set; }
         public string Sex { get; set; }
         public double Weight { get; set; }
+        public string Profile { get; set; }
         public int ExpiresAt { get; set; }
         public string RefreshToken { get; set; }
         public string AccessToken { get; set; }

@@ -36,8 +36,8 @@ namespace StravaSegmentExplorerDataAccess.SQLServer
 
             string mergeSqlAthlete = @"
             MERGE INTO dbo.Athlete AS Target 
-            USING (SELECT @AthleteId, @Id, @FirstName, @LastName, @City, @State, @Country, @Sex, @Weight) AS Source 
-            (AthleteId, Id, FirstName, LastName, City, State, Country, Sex, Weight) 
+            USING (SELECT @AthleteId, @Id, @FirstName, @LastName, @City, @State, @Country, @Sex, @Weight, @Profile) AS Source 
+            (AthleteId, Id, FirstName, LastName, City, State, Country, Sex, Weight, Profile) 
             ON Target.AthleteId = Source.AthleteId AND Target.Id = Source.Id
             WHEN MATCHED THEN 
                 UPDATE SET 
@@ -47,10 +47,11 @@ namespace StravaSegmentExplorerDataAccess.SQLServer
                     State = Source.State, 
                     Country = Source.Country,
                     Sex = Source.Sex, 
-                    Weight = Source.Weight
+                    Weight = Source.Weight,
+                    Profile = Source.Profile
             WHEN NOT MATCHED BY TARGET THEN 
-                INSERT (AthleteId, Id, FirstName, LastName, City, State, Country, Sex, Weight) 
-                VALUES (Source.AthleteId, Source.Id, Source.FirstName, Source.LastName, Source.City, Source.State, Source.Country, Source.Sex, Source.Weight);
+                INSERT (AthleteId, Id, FirstName, LastName, City, State, Country, Sex, Weight, Profile) 
+                VALUES (Source.AthleteId, Source.Id, Source.FirstName, Source.LastName, Source.City, Source.State, Source.Country, Source.Sex, Source.Weight, Source.Profile);
         ";
 
             var parametersAthlete = new
@@ -63,7 +64,8 @@ namespace StravaSegmentExplorerDataAccess.SQLServer
                 State = accessToken.Athlete.State,
                 Country = accessToken.Athlete.Country,
                 Sex = accessToken.Athlete.Sex,
-                Weight = accessToken.Athlete.Weight
+                Weight = accessToken.Athlete.Weight,
+                Profile = accessToken.Athlete.Profile,
             };
 
             SQLDataAccess.SaveData(mergeSqlAthlete, parametersAthlete, _stravaDbConnection);
@@ -93,6 +95,7 @@ namespace StravaSegmentExplorerDataAccess.SQLServer
             Athlete.Country, 
             Athlete.Sex, 
             Athlete.Weight, 
+            Athlete.Profile,
             AccessToken.ExpiresAt, 
             AccessToken.AccessToken
         FROM 
@@ -111,25 +114,25 @@ namespace StravaSegmentExplorerDataAccess.SQLServer
             return SQLDataAccess.LoadRecord<AppUserModel, dynamic>(sql, parameters, _stravaDbConnection).First();
         }
 
-        //public bool IsConnectedToStrava(string userID)
-        //{
-        //    string sql = @"
-        //SELECT 
-        //    IsStravaConnected
-        //FROM 
-        //    dbo.AspNetUsers
-        //WHERE 
-        //    Id = @Id";
+        public bool IsConnectedToStrava(string userID, string _identityDbConnection)
+        {
+            string sql = @"
+        SELECT 
+            IsStravaConnected
+        FROM 
+            dbo.AspNetUsers
+        WHERE 
+            Id = @Id";
 
-        //    var parameters = new
-        //    {
-        //        Id = userID
-        //    };
+            var parameters = new
+            {
+                Id = userID
+            };
 
-        //    var result = SQLDataAccess.LoadRecord<bool?, dynamic>(sql, parameters, ).FirstOrDefault();
+            var result = SQLDataAccess.LoadRecord<bool?, dynamic>(sql, parameters, _identityDbConnection).FirstOrDefault();
 
-        //    return result ?? false;
-        //}
+            return result ?? false;
+        }
 
     }
 }

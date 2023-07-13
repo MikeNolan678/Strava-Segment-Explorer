@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -19,13 +20,25 @@ namespace StravaSegmentExplorerUI.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly string _identityDbConnection;
+        private readonly string _stravaDbConnection;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+
+            var configSettings = SQLConfigurationService.GetConfigurationSettings(configuration);
+
+            _identityDbConnection = configSettings.IdentityDbConnection;
+            _stravaDbConnection = configSettings.StravaDbConnection;
+            _clientId = configSettings.ClientId;
+            _clientSecret = configSettings.ClientSecret;
         }
 
         /// <summary>
@@ -127,5 +140,28 @@ namespace StravaSegmentExplorerUI.Areas.Identity.Pages.Account.Manage
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
+
+        public bool IsConnectedToStrava()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            SQLOperations sqlOperations = new SQLOperations();
+
+            if (sqlOperations.IsConnectedToStrava(userId, _identityDbConnection))
+            {
+                var userData = sqlOperations.GetCurrentUserData(userId, _stravaDbConnection);
+
+                UserInfo = userData;
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+
+        
     }
 }

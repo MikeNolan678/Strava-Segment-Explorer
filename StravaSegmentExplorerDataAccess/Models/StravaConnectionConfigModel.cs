@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StravaSegmentExplorerDataAccess.Models
 {
-    public class SqlConnectionConfig
+    public class StravaConnectionConfigModel
     {
         public string StravaDbConnection { get; set; }
         public string IdentityDbConnection { get; set; }

@@ -16,7 +16,20 @@ namespace StravaSegmentExplorerDataAccess.API
 {
     public class StravaAPIDataAccess
     {
-        private readonly SqlConnectionConfig _sqlConnectionConfig = new SqlConnectionConfig();
+
+        //public StravaAPIDataAccess(IConfiguration configuration)
+        //{
+        //    configuration.GetSection("ConnectionStrings").Bind(_sqlConnectionConfig);
+
+        //    _identityDbConnection = _sqlConnectionConfig.IdentityDbConnection;
+        //    _stravaDbConnection = _sqlConnectionConfig.StravaDbConnection;
+
+        //    configuration.GetSection("OAuthSettings").Bind(_sqlConnectionConfig);
+        //    _clientId = _sqlConnectionConfig.ClientId;
+        //    _clientSecret = _sqlConnectionConfig.ClientSecret;
+
+        //}
+
         private readonly string _identityDbConnection;
         private readonly string _stravaDbConnection;
         private readonly string _clientId;
@@ -24,15 +37,12 @@ namespace StravaSegmentExplorerDataAccess.API
 
         public StravaAPIDataAccess(IConfiguration configuration)
         {
-            configuration.GetSection("ConnectionStrings").Bind(_sqlConnectionConfig);
+           var configSettings = SQLConfigurationService.GetConfigurationSettings(configuration);
 
-            _identityDbConnection = _sqlConnectionConfig.IdentityDbConnection;
-            _stravaDbConnection = _sqlConnectionConfig.StravaDbConnection;
-
-            configuration.GetSection("OAuthSettings").Bind(_sqlConnectionConfig);
-            _clientId = _sqlConnectionConfig.ClientId;
-            _clientSecret = _sqlConnectionConfig.ClientSecret;
-
+            _identityDbConnection = configSettings.IdentityDbConnection;
+            _stravaDbConnection = configSettings.StravaDbConnection;
+            _clientId = configSettings.ClientId;
+            _clientSecret = configSettings.ClientSecret;
         }
 
         private static HttpClient httpClient = new()

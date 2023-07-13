@@ -1,18 +1,30 @@
 ﻿using Microsoft.Extensions.Configuration;
+using StravaSegmentExplorerDataAccess.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace StravaSegmentExplorerDataAccess.SQLServer
 {
-    public class SQLConfigurationService
+    public static class SQLConfigurationService
     {
-        public string GetConnectionString(IConfiguration configuration, string name)
+        private static readonly StravaConnectionConfigModel _connectionString = new StravaConnectionConfigModel();
+        
+        public static SQLConnectionConfigModel GetConfigurationSettings(IConfiguration configuration)
         {
-            //var builder = new ConfigurationBuilder();
-            //builder.SetBasePath(Directory.GetCurrentDirectory());
-            //builder.AddJsonFile("appsettings.json");
-            //var configuration = builder.Build();
+            SQLConnectionConfigModel sqlConnectionConfig = new SQLConnectionConfigModel();
 
-            return configuration.GetConnectionString(name);
+            configuration.GetSection("ConnectionStrings").Bind(_connectionString);
+            sqlConnectionConfig.IdentityDbConnection = _connectionString.IdentityDbConnection;
+            sqlConnectionConfig.StravaDbConnection = _connectionString.StravaDbConnection;
+
+            configuration.GetSection("OAuthSettings").Bind(_connectionString);
+            sqlConnectionConfig.ClientId = _connectionString.ClientId;
+            sqlConnectionConfig.ClientSecret = _connectionString.ClientSecret;
+
+            return sqlConnectionConfig;
         }
     }
 }
