@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.Identity.Client;
 using StravaSegmentExplorerDataAccess.API;
 using StravaSegmentExplorerDataAccess.Models;
 using StravaSegmentExplorerDataAccess.SQLServer;
 using StravaSegmentExplorerUI.Data;
+using StravaSegmentExplorerUI.Models;
 
 namespace StravaSegmentExplorerUI
 {
@@ -26,9 +28,19 @@ namespace StravaSegmentExplorerUI
             builder.Services.AddControllersWithViews();
 
 
-            //end of DI
 
             builder.Services.AddSingleton<StravaAPIDataAccess>();
+            builder.Services.AddScoped<StravaSegmentExplorerUI.Controllers.ConnectToStravaController>();
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = ".SegmentExplore.Session";
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -52,9 +64,12 @@ namespace StravaSegmentExplorerUI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

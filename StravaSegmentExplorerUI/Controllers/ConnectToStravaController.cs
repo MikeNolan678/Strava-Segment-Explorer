@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using StravaSegmentExplorerDataAccess.API;
 using StravaSegmentExplorerDataAccess.Models;
 using StravaSegmentExplorerDataAccess.SQLServer;
+using StravaSegmentExplorerUI.Models;
 using System.Security.Claims;
 
 namespace StravaSegmentExplorerUI.Controllers
@@ -12,30 +13,41 @@ namespace StravaSegmentExplorerUI.Controllers
     public class ConnectToStravaController : Controller
     {
         private readonly StravaAPIDataAccess _stravaAPIAccess;
+        private readonly string _identityDbConnection;
+        private readonly string _stravaDbConnection;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
+        private readonly bool _isConnectedToStrava;
+        private readonly string _userId;
+        public const string _userID = "";
 
-        public ConnectToStravaController(StravaAPIDataAccess stravaAPIAccess)
+        public ConnectToStravaController(StravaAPIDataAccess stravaAPIAccess, IConfiguration configuration)
         {
             _stravaAPIAccess = stravaAPIAccess;
+
+            var configSettings = SQLConfigurationService.GetConfigurationSettings(configuration);
+
+            _identityDbConnection = configSettings.IdentityDbConnection;
+            _stravaDbConnection = configSettings.StravaDbConnection;
+            _clientId = configSettings.ClientId;
+            _clientSecret = configSettings.ClientSecret;
+
+            //bool isConnectedToStrava = IsConnectedToStrava();
+
+            //_isConnectedToStrava = isConnectedToStrava;
+
         }
 
         // GET: ConnectToStravaController
         public ActionResult Index()
         {
+ 
+
             return View();
         }
 
         // GET: ConnectToStravaController/Details/5
         public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        public ActionResult ConnectionError()
-        {
-            return View();
-        }
-
-        public ActionResult ConnectionSuccess()
         {
             return View();
         }
@@ -88,6 +100,23 @@ namespace StravaSegmentExplorerUI.Controllers
             return View();
         }
 
+        public ActionResult Milestone()
+        {
+            bool isStravaConnected = _isConnectedToStrava;
+            //ViewData["IsStravaConnected"] = isStravaConnected;
+
+            return View();
+        }
+
+        public ActionResult Segments()
+        {
+            bool isStravaConnected = _isConnectedToStrava;
+            //ViewData["IsStravaConnected"] = isStravaConnected;
+
+            return View();
+        }
+
+
         // POST: ConnectToStravaController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -135,6 +164,29 @@ namespace StravaSegmentExplorerUI.Controllers
 
                 return View("ConnectionError");
             }
+        }
+
+        public AppUserModel UserInfo { get; set; }
+
+        public bool IsConnectedToStrava()
+        {
+            string userId = _userID;
+
+            SQLOperations sqlOperations = new SQLOperations();
+
+            if (sqlOperations.IsConnectedToStrava(userId, _identityDbConnection))
+            {
+                var userData = sqlOperations.GetCurrentUserData(userId, _stravaDbConnection);
+
+                UserInfo = userData;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }

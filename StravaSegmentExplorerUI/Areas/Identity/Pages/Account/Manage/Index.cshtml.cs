@@ -24,6 +24,7 @@ namespace StravaSegmentExplorerUI.Areas.Identity.Pages.Account.Manage
         private readonly string _stravaDbConnection;
         private readonly string _clientId;
         private readonly string _clientSecret;
+        
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
@@ -39,6 +40,9 @@ namespace StravaSegmentExplorerUI.Areas.Identity.Pages.Account.Manage
             _stravaDbConnection = configSettings.StravaDbConnection;
             _clientId = configSettings.ClientId;
             _clientSecret = configSettings.ClientSecret;
+
+            
+
         }
 
         /// <summary>

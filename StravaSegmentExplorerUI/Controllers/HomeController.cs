@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StravaSegmentExplorerUI.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace StravaSegmentExplorerUI.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        
 
         public HomeController(ILogger<HomeController> logger)
         {

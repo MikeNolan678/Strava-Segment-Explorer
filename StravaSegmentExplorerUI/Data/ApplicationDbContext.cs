@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using StravaSegmentExplorerDataAccess.Models;
 
 namespace StravaSegmentExplorerUI.Data
 {
@@ -9,5 +10,6 @@ namespace StravaSegmentExplorerUI.Data
             : base(options)
         {
         }
+        public DbSet<StravaSegmentExplorerDataAccess.Models.AppUserModel>? AppUserModel { get; set; }
     }
 }

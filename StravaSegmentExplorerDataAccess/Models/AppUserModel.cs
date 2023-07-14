@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -9,6 +10,7 @@ namespace StravaSegmentExplorerDataAccess.Models
 {
     public class AppUserModel
     {
+        [Key]
         public int AthleteId { get; set; }
         public string Username { get; set; }
         public string FirstName { get; set; }
