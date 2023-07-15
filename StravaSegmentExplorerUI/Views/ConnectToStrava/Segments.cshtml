@@ -1,16 +1,22 @@
-﻿@using StravaSegmentExplorerUI.Controllers;
+﻿
+@using StravaSegmentExplorerUI.Controllers;
 
 @{
     bool isStravaConnected = (bool)ViewData["IsStravaConnected"];
 }
+
 <h1>Segments</h1>
+
 @{
     ViewData["Title"] = "Segments";
 
-    if(!isStravaConnected)
+    if (!isStravaConnected)
     {
         <p>Visit your profile to connect to Strava</p>
     }
-
+    else
+    {
+        <p>Segments are not yet launched. Come back soon!</p>
+    }
 }
 

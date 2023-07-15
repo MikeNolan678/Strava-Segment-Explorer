@@ -24,7 +24,7 @@
                             if (User.Identity.IsAuthenticated)
                         {
                             <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="leaderboardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-primary dropdown-toggle" style="background-color: #0D6EFD;" type="button" id="leaderboardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     Leaderboards
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="leaderboardDropdown">
@@ -39,7 +39,9 @@
                         }
                     }
 
-                    <partial name="_LoginPartial" />
+                    <div class="ms-3">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>

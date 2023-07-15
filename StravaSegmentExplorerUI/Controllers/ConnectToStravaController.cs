@@ -6,6 +6,7 @@ using StravaSegmentExplorerDataAccess.API;
 using StravaSegmentExplorerDataAccess.Models;
 using StravaSegmentExplorerDataAccess.SQLServer;
 using StravaSegmentExplorerUI.Models;
+
 using System.Security.Claims;
 
 namespace StravaSegmentExplorerUI.Controllers
@@ -104,6 +105,44 @@ namespace StravaSegmentExplorerUI.Controllers
             ViewData["IsStravaConnected"] = isStravaConnected;
 
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult MilestoneFilterResult()
+        {
+
+            return RedirectToAction("Milestone");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MilestoneFilterResult(MilestoneModel milestoneFilter)
+        {
+            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
+            var _milestone = milestoneFilter.Milestone;
+            var _sport = milestoneFilter.Sport;
+
+            try
+            {
+                List<ActivityModel> output = new List<ActivityModel>();
+
+                var activityList = await _stravaAPIAccess.GetListOfActivities(_userId);
+                milestoneFilter.ResultIsReady = true;
+
+                output = MilestoneResultsController.GetMilestoneResultsActivityList(activityList, _milestone, _sport);
+
+                if (output != null)
+                {
+                    milestoneFilter.Results.AddRange(output);
+                }
+
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception($"{e.Message}, {e.StackTrace}");
+            }
+
+            return View(milestoneFilter);
         }
 
         public ActionResult Segments()

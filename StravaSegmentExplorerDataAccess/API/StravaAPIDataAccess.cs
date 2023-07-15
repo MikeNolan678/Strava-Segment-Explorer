@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using StravaSegmentExplorerDataAccess.Models;
 using StravaSegmentExplorerDataAccess.SQLServer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -16,24 +19,12 @@ namespace StravaSegmentExplorerDataAccess.API
 {
     public class StravaAPIDataAccess
     {
-
-        //public StravaAPIDataAccess(IConfiguration configuration)
-        //{
-        //    configuration.GetSection("ConnectionStrings").Bind(_sqlConnectionConfig);
-
-        //    _identityDbConnection = _sqlConnectionConfig.IdentityDbConnection;
-        //    _stravaDbConnection = _sqlConnectionConfig.StravaDbConnection;
-
-        //    configuration.GetSection("OAuthSettings").Bind(_sqlConnectionConfig);
-        //    _clientId = _sqlConnectionConfig.ClientId;
-        //    _clientSecret = _sqlConnectionConfig.ClientSecret;
-
-        //}
-
         private readonly string _identityDbConnection;
         private readonly string _stravaDbConnection;
         private readonly string _clientId;
         private readonly string _clientSecret;
+        private string _userId;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public StravaAPIDataAccess(IConfiguration configuration)
         {
@@ -43,11 +34,12 @@ namespace StravaSegmentExplorerDataAccess.API
             _stravaDbConnection = configSettings.StravaDbConnection;
             _clientId = configSettings.ClientId;
             _clientSecret = configSettings.ClientSecret;
+
         }
 
         private static HttpClient httpClient = new()
         {
-            BaseAddress = new Uri("https://www.strava.com/oauth"),
+            BaseAddress = new Uri("https://www.strava.com")
         };
 
         public async Task<bool> ConnectToStravaApi(HttpRequest request, string userID)
@@ -91,7 +83,7 @@ namespace StravaSegmentExplorerDataAccess.API
 
         private async Task<AccessTokenModel> GetStravaToken(string code)
         {
-            string requestUri = $"{httpClient.BaseAddress}/token";
+            string requestUri = $"{httpClient.BaseAddress}oauth/token";
 
             var postData = new List<KeyValuePair<string, string>>
                 {
@@ -151,7 +143,71 @@ namespace StravaSegmentExplorerDataAccess.API
             }
         }
 
+        public async Task<List<ActivityModel>> GetListOfActivities(string _userId)
+        {
+            AppUserModel appUser;
+            //Not implemented, but here for future use
+            //string before = "";
+            //string after = "";
 
+            int page = 1;
+            string perPage = "200";
+
+            try
+            {
+                SQLOperations sqlOperations = new SQLOperations();
+                appUser = sqlOperations.GetCurrentUserData(_userId, _stravaDbConnection);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Could not get User Data");
+            }
+
+            try
+            {
+                List<ActivityModel> activityList = new List<ActivityModel>();
+                List<ActivityModel> resultActivityModel = new List<ActivityModel>();
+
+                do
+                {
+                    string requestUri = $"{httpClient.BaseAddress}api/v3/athlete/activities?page={page}&per_page={perPage}";
+
+                    var authorizationHeaderValue = $"Bearer {appUser.AccessToken}";
+
+                    if (httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                    {
+                        httpClient.DefaultRequestHeaders.Remove("Authorization");
+                    }
+
+                    httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeaderValue);
+
+                    var response = await httpClient.GetAsync(requestUri);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+
+                        resultActivityModel = JsonSerializer.Deserialize<List<ActivityModel>>(result);
+
+                        activityList.AddRange(resultActivityModel);
+                        page++;
+
+                        //Console.WriteLine(page);
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                while (resultActivityModel.Count >= 1);
+
+                return activityList;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"{e.Message}, {e.StackTrace}");
+            }
+        }
 
     }
 }
