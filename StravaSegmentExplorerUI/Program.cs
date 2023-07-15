@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.Identity.Client;
 using StravaSegmentExplorerDataAccess.API;
 using StravaSegmentExplorerDataAccess.Models;
 using StravaSegmentExplorerDataAccess.SQLServer;
 using StravaSegmentExplorerUI.Data;
+using StravaSegmentExplorerUI.Models;
 
 namespace StravaSegmentExplorerUI
 {
@@ -16,19 +18,34 @@ namespace StravaSegmentExplorerUI
 
 
             // Add services to the container.
+
+            
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => {
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddHttpContextAccessor();
 
-            //end of DI
+            builder.Services.AddScoped<StravaAPIDataAccess>();
+            builder.Services.AddScoped<StravaSegmentExplorerUI.Controllers.ConnectToStravaController>();
 
-            builder.Services.AddSingleton<StravaAPIDataAccess>();
+            builder.Services.AddMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = ".SegmentExplore.Session";
+                options.IdleTimeout = TimeSpan.FromSeconds(1000);
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -52,9 +69,12 @@ namespace StravaSegmentExplorerUI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

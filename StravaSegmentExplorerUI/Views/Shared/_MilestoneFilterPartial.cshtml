@@ -1,0 +1,41 @@
+﻿
+@{
+    <form method="post" asp-controller="ConnectToStrava" asp-action="MilestoneFilterResult" class="mb-3">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="sport">Sport:</label>
+                    <select class="form-control" id="sport" name="milestoneFilter.Sport" required>
+                        <option value=""></option>
+                        <option value="Ride">Road Cycling</option>
+                        <option value="Run">Road Running</option>
+                        <option value="TrailRun">Trail Running</option>
+                        <option value="Hike">Hiking</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="milestone">Milestone:</label>
+                    <select class="form-control" id="milestone" name="milestoneFilter.Milestone" required>
+                        <option value=""></option>
+                        <option value="5k">5 km</option>
+                        <option value="10k">10 km</option>
+                        <option value="HalfMarathon">Half Marathon</option>
+                        <option value="Marathon">Marathon</option>
+                        <option value="50k">50 km</option>
+                        <option value="100k">100 km</option>
+                        <option value="200k">200 km</option>
+                        <option value="50M">50 Miles</option>
+                        <option value="100M">100 Miles</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-4">Apply</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}

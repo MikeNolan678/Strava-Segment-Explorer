@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StravaSegmentExplorerUI.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace StravaSegmentExplorerUI.Controllers
 {
@@ -8,14 +9,25 @@ namespace StravaSegmentExplorerUI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
+        public const string UserIdKey = "UserIdKey";
+
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
         [RequireHttps]
+        [HttpGet]
         public IActionResult Index()
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId != null)
+            {
+                HttpContext.Session.SetString(UserIdKey, userId);
+            }
+
             return View();
         }
 
