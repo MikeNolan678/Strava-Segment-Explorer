@@ -32,13 +32,12 @@ namespace StravaSegmentExplorerUI
             builder.Services.AddSingleton<StravaAPIDataAccess>();
             builder.Services.AddScoped<StravaSegmentExplorerUI.Controllers.ConnectToStravaController>();
 
-            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddMemoryCache();
 
             builder.Services.AddSession(options =>
             {
                 options.Cookie.Name = ".SegmentExplore.Session";
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true;
+                options.IdleTimeout = TimeSpan.FromSeconds(1000);
                 options.Cookie.IsEssential = true;
             });
 

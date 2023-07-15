@@ -8,7 +8,9 @@ namespace StravaSegmentExplorerUI.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
+
+        public const string UserIdKey = "UserIdKey";
+
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -16,8 +18,16 @@ namespace StravaSegmentExplorerUI.Controllers
         }
 
         [RequireHttps]
+        [HttpGet]
         public IActionResult Index()
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId != null)
+            {
+                HttpContext.Session.SetString(UserIdKey, userId);
+            }
+
             return View();
         }
 
