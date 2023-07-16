@@ -54,7 +54,7 @@ namespace StravaSegmentExplorerDataAccess.API
                 //Could redirect to authorization page, with message to say request was denied/wrong scope. 
                 //Button on page to re-authorize with strava
 
-                throw new Exception("Request denied or incorrect scope granted.");
+                return false;
             }
 
             try
