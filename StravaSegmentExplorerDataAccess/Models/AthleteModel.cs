@@ -58,7 +58,7 @@ namespace StravaSegmentExplorerDataAccess.Models
             public int BadgeTypeId { get; set; }
 
             [JsonPropertyName("weight")]
-            public double Weight { get; set; }
+            public double? Weight { get; set; }
 
             [JsonPropertyName("profile_medium")]
             public string ProfileMedium { get; set; }
