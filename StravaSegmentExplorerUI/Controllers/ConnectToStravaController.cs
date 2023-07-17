@@ -43,64 +43,8 @@ namespace StravaSegmentExplorerUI.Controllers
             return View();
         }
 
-        // GET: ConnectToStravaController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: ConnectToStravaController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: ConnectToStravaController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ConnectToStravaController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ConnectToStravaController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ConnectToStravaController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
         public ActionResult Milestone()
         {
-            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
-
             bool isStravaConnected = IsConnectedToStrava();
             ViewData["IsStravaConnected"] = isStravaConnected;
 
@@ -117,7 +61,8 @@ namespace StravaSegmentExplorerUI.Controllers
         [HttpPost]
         public async Task<IActionResult> MilestoneFilterResult(MilestoneModel milestoneFilter)
         {
-            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var _milestone = milestoneFilter.Milestone;
             var _sport = milestoneFilter.Sport;
 
@@ -125,7 +70,7 @@ namespace StravaSegmentExplorerUI.Controllers
             {
                 List<ActivityModel> output = new List<ActivityModel>();
 
-                var activityList = await _stravaAPIAccess.GetListOfActivities(_userId);
+                var activityList = await _stravaAPIAccess.GetListOfActivities(currentUserId);
                 milestoneFilter.ResultIsReady = true;
 
                 output = MilestoneResultsController.GetMilestoneResultsActivityList(activityList, _milestone, _sport);
@@ -147,28 +92,10 @@ namespace StravaSegmentExplorerUI.Controllers
 
         public ActionResult Segments()
         {
-            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
-
             bool isStravaConnected = IsConnectedToStrava();
             ViewData["IsStravaConnected"] = isStravaConnected;
 
             return View();
-        }
-
-
-        // POST: ConnectToStravaController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
 
         public ActionResult Authorize()
@@ -183,10 +110,9 @@ namespace StravaSegmentExplorerUI.Controllers
 
         public async Task<ActionResult> ConnectToStrava()
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
-
-            bool isConnected = await _stravaAPIAccess.ConnectToStravaApi(Request, _userId);
+            bool isConnected = await _stravaAPIAccess.ConnectToStravaApi(Request, currentUserId);
 
             try
             {
@@ -210,16 +136,12 @@ namespace StravaSegmentExplorerUI.Controllers
 
         public bool IsConnectedToStrava()
         {
-            _userId = _httpContextAccessor.HttpContext.Session.GetString("UserIdKey");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             SQLOperations sqlOperations = new SQLOperations();
 
-            if (sqlOperations.IsConnectedToStrava(_userId, _identityDbConnection))
+            if (sqlOperations.IsConnectedToStrava(currentUserId, _identityDbConnection))
             {
-                var userData = sqlOperations.GetCurrentUserData(_userId, _stravaDbConnection);
-
-                UserInfo = userData;
-
                 return true;
             }
             else
