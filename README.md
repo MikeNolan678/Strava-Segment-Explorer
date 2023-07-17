@@ -5,21 +5,14 @@ In it's current form, this application allows users to connect to their Strava a
 <br />
 
 ## Demo Environment
-It's possible to access a demo environment here - https://stravasegmentexplorerui20230716223842.azurewebsites.net/
+Feel free to explore the demo environment, which is hosted on Azure using Azure App Services and SQL Server - https://stravasegmentexplorerui20230716223842.azurewebsites.net/
 
-You  can login using the demo account (this is already connected to Strava)
+You can log in using the demo account, which is already connected to Strava. Sample data is available for Road Running, 5km.
     
-#### User:  
-demo@test.com
+**User:** demo@test.com
 
-#### Password:
-Test123!
-    
+**Password:** Test123!
 
-Please keep in mind that this is not a production implementation, and you should not try to create a new account and link to your own Strava account. 
-
-The environment is hosted on Azure, using Azure App Services and SQL Server. 
-    
 
 ## Application Structure
 
@@ -28,7 +21,7 @@ The solution is divided into three projects:
 1. **StravaSegmentExplorerUI:** This project is responsible for the User Interface, built with ASP.NET MVC and Razor Pages. It contains all the Controllers, Views and related logic.
 
     - The user can register and log in via the UI.
-    - Via the 'Profile' page, the user can connect to Strava through HTTP Get and Post requests, using OAuth2.0 for authentication. Once connected, a summary of your Strava profile is diaplayed. 
+    - Via the 'Profile' page, the user can connect to Strava through HTTP Get and Post requests, using OAuth2.0 for authentication. Once connected, a summary of your Strava profile is displayed. 
     - The UI offers filtering capabilities (through the use of Partial Views and HTTP Get Requests), to display insights into the users Strava Activity.
 
     ![image](https://github.com/MikeNolan678/StravaSegmentExplorer/assets/50291390/77501ba8-e512-4ab3-b849-e7a7a486773c)
