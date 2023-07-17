@@ -147,13 +147,13 @@ namespace StravaSegmentExplorerUI.Areas.Identity.Pages.Account.Manage
 
         public bool IsConnectedToStrava()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             SQLOperations sqlOperations = new SQLOperations();
 
-            if (sqlOperations.IsConnectedToStrava(userId, _identityDbConnection))
+            if (sqlOperations.IsConnectedToStrava(currentUserId, _identityDbConnection))
             {
-                var userData = sqlOperations.GetCurrentUserData(userId, _stravaDbConnection);
+                var userData = sqlOperations.GetCurrentUserData(currentUserId, _stravaDbConnection);
 
                 UserInfo = userData;
                 
