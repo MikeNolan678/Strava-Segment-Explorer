@@ -35,7 +35,7 @@ The solution is divided into three projects:
 
 <br />
 
-2. **StravaSegmentExplorerDataAccess:** This project is responsible for all data access and manipulation logic, including SQL Server and API calls to Strava's API. It ustilises Dapper as an ORM for interacting with the database.
+2. **StravaSegmentExplorerDataAccess:** This project is responsible for all data access and manipulation logic, including SQL Server and calls to Strava's API. It utilises Dapper as an ORM for interacting with the database.
 
     - API calls are made to the Strava API (https://developers.strava.com/).
     - Activity information is retrieved and processed, before being returned to the relevant Controller in ASP.Net Core MVC.
